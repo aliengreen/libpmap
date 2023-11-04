@@ -129,7 +129,9 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
   }
   pbuffer_t *pbfr = pbfr_create(1024);
 
-  while (1) {
+  while (true) {
+
+    /* Receive M-SEARCH response */
     if ((len = recvfrom(sockfd, pbfr->buffer, pbfr->size, 0,
                         (struct sockaddr *)&client, &ca_size)) > 0) {
 
@@ -172,6 +174,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
               if (ctrl_url_len) {
                 url_comp->crtl_url = malloc(ctrl_url_len + 1);
                 strncpy(url_comp->crtl_url, tmp, ctrl_url_len);
+                url_comp->crtl_url[ctrl_url_len] = 0;
               } else {
                 /* Cleanup */
                 pmap_ut_free_url(url_comp);
@@ -387,6 +390,7 @@ int pmap_req_ctrlurl(pmap_url_comp_t *ucmp, char *ctrl_url, int size) {
     if ((ret = pmap_ut_substr("<controlURL>", "</controlURL>", start,
                               pbfr_tmp->buffer, pbfr_tmp->size)) == 0) {
       strncpy(ctrl_url, pbfr_tmp->buffer, size);
+      ctrl_url[size] = 0;
     }
   }
 
