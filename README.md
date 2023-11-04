@@ -1,2 +1,197 @@
-# libpmap
+# Port Mapping Library - libpmap
+
 The library to manage Internet Gateway external port mapping with **UPnP** and **NAT-PMP** written in C
+
+The Internet Gateway External Port Mapping Library is a standalone C library designed to manage external port mappings on Internet Gateway Devices (IGDs) using both UPnP (Universal Plug and Play) and NAT-PMP (Network Address Translation Port Mapping Protocol). The library is built with a focus on **minimal dependencies**, relying solely on **POSIX** standard C functions and **BSD**-like socket operations. This makes it easy to integrate into various C-based applications without introducing complex dependencies.
+
+NAT-PMP and UPnP are protocols that help with configuring port forwarding in NAT routers, making it easier for devices and services on a local network to be accessible from the internet. NAT-PMP is a simpler and more secure option often used by Apple devices, while UPnP is a more comprehensive protocol suite used by a wider range of devices but has some security concerns. 
+
+UPnP and NAT-PMP port forwarding services are usually activated by default on the majority of consumer-grade internet gateway Network Address Translation (NAT) routers. This default setting allows devices within the internal network to autonomously configure the required TCP and UDP port forwarding operations on the outward-facing router. In essence, this empowers external devices to establish connections with services hosted on your internal network without the need for manual configuration.
+
+## Build
+
+The program tested on Mac OS X and Linux machine. It may build in Windows platforms (we did not test).    
+
+Now you can build `pmap`
+
+    > cd libpmap
+    > make clean && make
+
+This is **not mandatory** but you can make distribution binary file by typing in terminal window:
+
+    > make dist
+
+First type without arguments from command line:
+
+`./pmap`
+
+In terminal output window you will see options:
+
+    usage: ./pmap < -p | -u | -l > < -a | -d > <args>
+      -p    Using NAT-PMP protocol for port mapping
+            <args>: <external port> <my_ip_v4> <gateway_ip_v4> <protocol> <lifetime>
+      -u    Using UPnP protocol for port mapping
+            <args>: <external port> <my_ip_v4> <gateway_ip_v4> <protocol> <lifetime>
+      -a    Add port mapping
+      -d    Delete port mapping
+      -e    Get external IP from
+      -l    Print list of available gateways (NAT-PMP and UPnP)
+      -v    show request => response debug output
+      -h    show this help and exit
+    Example 1: ./pmap -l
+    Example 2: ./pmap -u -a 6568 192.168.1.7 192.168.1.1 TCP 7200
+    Example 3: ./pmap -u -d 6568 192.168.1.1 TCP
+    Example 4: ./pmap -u -e 192.168.1.1
+
+
+
+## How to use pmap
+
+##### Print list of available gateways (NAT-PMP and UPnP)
+
+The provided command, is used to list available gateways in the local network that support NAT-PMP and UPnP protocols for managing port mappings.
+
+```
+./pmap -l
+```
+
+Possible output:
+
+```
+Request...
+-----------------------------------------------------------
+Host			Path		Control URL
+-----------------------------------------------------------
+192.168.1.1:53055	rootDesc.xml	/ctl/IPConn
+-----------------------------------------------------------
+```
+
+##### Add port mapping UPnP
+
+The provided command is used to add a UPnP port mapping, forwarding external traffic from port `6569` to an internal device at IP address `192.168.1.7` on port `6569` using the `TCP` protocol, with a lifetime of `7200` seconds. 
+
+```
+./pmap -u -a 6569 192.168.1.7 192.168.1.1 TCP 7200
+```
+
+The following options and arguments:
+
+- `-u`  Indicates that you want to use UPnP for port mapping.
+- `-a` Specifies that you want to add a port mapping.
+- `6569`  This is the external port, the port number on the router's public IP address that you want to map to an internal device.
+- `192.168.1.7`  This is the internal IP address of the device within your local network that you want to forward traffic to.
+- `192.168.1.1`  This is the IP address of your gateway or router.
+- `TCP`  This indicates the protocol you want to use for the port mapping, in this case, TCP.
+- `7200`  This is the lifetime of the port mapping in seconds, which specifies how long the port mapping should remain active. 0 indicates no expiration.
+
+Possible Output:
+
+```
+Request...
+Add port mapping to [TCP => 6569] lifetime=7200 secs
+```
+
+After executing the command. Here's a breakdown of the output:
+
+"Add port mapping to [TCP => 6569] lifetime=7200 secs": This part of the output signifies the successful addition of the port mapping.
+
+##### Delete port mapping UPnP
+
+The provided command is used to delete a UPnP port mapping associated with the specified external port number `6569` and protocol `TCP` on the router or gateway with the IP address `192.168.1.1`. The output confirms the successful removal of the port mapping.
+
+```
+./pmap -u -d 6569 192.168.1.1 TCP
+```
+
+The following options and arguments:
+
+- `-u` Indicates that you want to use UPnP for port mapping.
+- `-d` Specifies that you want to delete a port mapping.
+- `6569` This is the external port number that you want to delete the mapping for.
+- `192.168.1.1` This is the IP address of the router or gateway from which you want to remove the port mapping.
+- `TCP` This indicates the protocol of the port mapping to be deleted, which is TCP in this case.
+
+Possible output:
+
+```
+Request...
+Delete port mapping to [TCP => 6569]
+```
+
+"Delete port mapping to [TCP => 6569]": This part of the output signifies the successful deletion of the port mapping.
+
+##### Get external IP UPnP
+
+The provided command is used to query a router or gateway with the IP address `192.168.1.1` and retrieve its external IP address using UPnP. This information can be helpful in various networking scenarios where knowing the external IP address is necessary, such as for remote access or dynamic DNS services.
+
+```
+./pmap -u -e 192.168.1.1
+```
+
+The following options and arguments:
+
+- `-u` Indicates that you want to use UPnP.
+- `-e` Specifies that you want to retrieve the external IP address.
+- `192.168.1.1` This is the IP address of the router or gateway from which you want to retrieve the external IP address.
+
+Possible output:
+
+```
+Request...
+External IP=[10.0.1.51]
+```
+
+"External IP=[10.0.1.51]": This part of the output provides the external IP address that has been obtained. In this case, the external IP address is "10.0.1.51."
+
+
+
+## How to use library
+
+- [UPnP Examples](docs/UPnP.md)
+
+- [External Port Mapping Considerations](docs/EPMC.md)
+
+
+
+## Troubleshooting
+
+### Debug Log Trace
+
+There are two types of debug output mechanisms in library:
+
+- Compile-Time Debug Output:
+
+   - During the compile time, you can choose to enable or disable certain debugging features. If you want to turn off compile-time debugging, you would need to recompile the project without the debug output macros. This means modifying build configuration to exclude debug-related code.
+- Runtime Debug Output:
+
+   - This type of debug output can be enabled or disabled while the program is running. When you activate runtime debug mode, it allows you to control the visibility of network packet requests and responses, including UDP and HTTP traffic.
+   - You can toggle the runtime debug mode on and off without the need to recompile the entire program. This is especially useful for monitoring and diagnosing UPnP and NAT-PMP issues during the execution of the program.
+   
+
+To enable compile-time debugging, you should set the `PMAP_DEBUG_LOG_DEBUG` and `PMAP_DEBUG_LOG_ERROR` value to `1` in the `pmap_debug.h` file, and then recompile the project to apply the changes to the final binary.
+
+To enable runtime debug output, you can call the function `pmap_http_set_debug(true)` to turn on debug output or `false` to turn it off during program runtime.
+
+### Packet Timeout
+
+Because, UPnP and NAT-PMP protocols based on UDP layer the network packets can sometimes be lost or delayed, and the response from the router may not arrive in time. To mitigate this issue, the software or library allows you to adjust the timeout value for waiting for a response from the router. The default timeout is set to 2 seconds, both for UDP and TCP calls. If you find that the first call to `pmap_list_upnp` often results in an empty list due to packet loss or delays, you can increase the timeout value by changing the `PMAP_DEFAULT_WAIT_TIMEOUT` value in the `pmap_cfg.h` file. By increasing the timeout, you provide the router with more time to respond, reducing the likelihood of an empty list in the function's response. 
+
+As mentioned earlier, the initial call to `pmap_list_upnp` may occasionally yield an empty list of results. In such situations, it is recommended to make a subsequent attempt to confirm that the request has not been lost.
+
+
+
+## Resources
+
+https://www.rapid7.com/blog/post/2020/12/22/upnp-with-a-holiday-cheer/
+
+- [IGDP](http://en.wikipedia.org/wiki/Internet_Gateway_Device_Protocol)
+- [STUN](http://en.wikipedia.org/wiki/Session_Traversal_Utilities_for_NAT)
+- [ICE](http://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment)
+- [NAT-PMP](http://en.wikipedia.org/wiki/NAT_Port_Mapping_Protocol)
+  - https://www.rfc-editor.org/rfc/rfc6886
+- [PCP](http://en.wikipedia.org/wiki/Port_Control_Protocol)
+  - https://www.rfc-editor.org/rfc/rfc6887
+- [UPnP](http://en.wikipedia.org/wiki/Universal_Plug_and_Play)
+  - https://www.rfc-editor.org/rfc/rfc6970
+  - https://openconnectivity.org/upnp-specs/UPnP-arch-DeviceArchitecture-v2.0-20200417.pdf
+

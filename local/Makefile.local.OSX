@@ -1,0 +1,12 @@
+TARGET		= pmap
+
+INSTALLDIR_BIN	= /usr/local/bin
+CC=clang
+CXX=clang++
+TARGET_FLAGS	=
+#TARGET_CFLAGS   = -mmacosx-version-min=10.6 -arch i386 -arch x86_64
+#TARGET_CXXFLAGS = -mmacosx-version-min=10.6 -arch i386 -arch x86_64
+#TARGET_LDFLAGS  = -mmacosx-version-min=10.6 -arch i386 -arch x86_64
+TARGET_CFLAGS =
+TARGET_CXXFLAGS =
+TARGET_LDFLAGS =

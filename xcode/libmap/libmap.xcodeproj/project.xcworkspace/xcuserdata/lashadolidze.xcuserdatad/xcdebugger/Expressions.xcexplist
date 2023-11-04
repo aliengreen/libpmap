@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "pmap_req_msearch:pmap.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "&amp;urls[num]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "parse_url:pmap.c">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
