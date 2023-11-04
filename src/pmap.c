@@ -161,6 +161,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
            */
           if (only_igds) {
             int http_status;
+            memset(tmp, 0x00, sizeof(tmp));
             if ((http_status = pmap_req_ctrlurl(url_comp, tmp, sizeof(tmp))) !=
                 0) {
               /* Cleanup */
@@ -168,8 +169,14 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
               continue;
             } else {
               int ctrl_url_len = strlen(tmp);
-              url_comp->crtl_url = malloc(ctrl_url_len);
-              strncpy(url_comp->crtl_url, tmp, ctrl_url_len);
+              if (ctrl_url_len) {
+                url_comp->crtl_url = malloc(ctrl_url_len + 1);
+                strncpy(url_comp->crtl_url, tmp, ctrl_url_len);
+              } else {
+                /* Cleanup */
+                pmap_ut_free_url(url_comp);
+                continue;
+              }
             }
           }
 
