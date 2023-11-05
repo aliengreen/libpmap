@@ -62,8 +62,8 @@ typedef struct pmap_field_t_ {
   int external_port;
   int internal_port;
   char protocol[4];
-  char internal_ip[16];
-  char gateway_ip[16];
+  uint32_t internal_ip;
+  uint32_t gateway_ip;
   int lifetime_sec;
 } pmap_field_t;
 
@@ -71,10 +71,7 @@ void pmap_http_set_debug(uint8_t debug);
 int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds);
 int pmap_list_igd(pmap_url_comp_t **urls);
 void pmap_list_free(pmap_url_comp_t *urls);
-pbuffer_t *pmap_req_post(const char *hostname, int port, char *path,
-                         char *header, pbuffer_t *pbfr_body, int *http_status);
-pbuffer_t *pmap_req_get(const char *hostname, int port, char *path,
-                        int *http_status);
+
 int pmap_req_ctrlurl(pmap_url_comp_t *ucmp, char *ctrl_url, int size);
 int pmap_upnp_addport(pmap_field_t *pfield, char *error, int size);
 int pmap_upnp_delport(pmap_field_t *pfield, char *error, int size);

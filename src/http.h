@@ -32,5 +32,8 @@ pbuffer_t *pmap_http_create(const char *method, const char *hostname, int port,
 int pmap_http_connect(const char *hostname, int port);
 pbuffer_t *pmap_http_req(const char *hostname, int port, pbuffer_t *pbfr,
                          int *http_status);
-
+pbuffer_t *pmap_http_post(const char *hostname, int port, char *path,
+                          char *header, pbuffer_t *pbfr_body, int *http_status);
+pbuffer_t *pmap_http_get(const char *hostname, int port, char *path,
+                         int *http_status);
 #endif // _HTTP_H

@@ -8,6 +8,10 @@ NAT-PMP and UPnP are protocols that help with configuring port forwarding in NAT
 
 UPnP and NAT-PMP port forwarding services are usually activated by default on the majority of consumer-grade internet gateway Network Address Translation (NAT) routers. This default setting allows devices within the internal network to autonomously configure the required TCP and UDP port forwarding operations on the outward-facing router. In essence, this empowers external devices to establish connections with services hosted on your internal network without the need for manual configuration.
 
+***NOTE: The project is under active development and anything can change at any time.***
+
+
+
 ## Build
 
 The program tested on Mac OS X and Linux machine. It may build in Windows platforms (we did not test).    

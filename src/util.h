@@ -25,6 +25,7 @@
 #define _UTIL_H
 
 #include "pmap_errno.h"
+#include <stdint.h>
 
 typedef struct pmap_url_comp_t_ {
 
@@ -48,5 +49,5 @@ int pmap_ut_substr(const char *startTxt, const char *endTxt,
                    const char *xmlSnippet, char *buffer, int len);
 int pmap_ut_parse_url(const char *url, pmap_url_comp_t *ucomp);
 void pmap_ut_free_url(pmap_url_comp_t *url);
-
+char *pmap_ut_inet_ntoa(uint32_t ip);
 #endif // _UTIL_H

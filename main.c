@@ -181,7 +181,7 @@ void print_list() {
   pmap_url_comp_t *urls;
 
   printf("Request...\n");
-  pmap_list_upnp(&urls, PMAP_UPNP_LIST_IGD);
+  pmap_list_upnp(&urls, PMAP_UPNP_LIST_ALL);
   printf("-----------------------------------------------------------\n");
   printf("Host\t\t\tPath\t\tControl URL\n");
   printf("-----------------------------------------------------------\n");
@@ -210,9 +210,7 @@ int print_exip(int argc, char **argv) {
   char external_ip[16];
   char error_desc[64];
   pmap_field_t pfield;
-
-  strncpy(pfield.gateway_ip, gateway_ip, sizeof(pfield.gateway_ip));
-
+  pfield.gateway_ip = inet_addr(gateway_ip);
   printf("Request...\n");
   if ((ret = pmap_upnp_getexip(&pfield, external_ip, sizeof(external_ip),
                                error_desc, sizeof(error_desc))) == 0) {
@@ -249,8 +247,9 @@ int addport_upnp(int argc, char **argv) {
   pfield.external_port = port;
   pfield.internal_port = port;
   pfield.lifetime_sec = lifetime;
-  strncpy(pfield.internal_ip, my_ip, sizeof(pfield.internal_ip));
-  strncpy(pfield.gateway_ip, gateway_ip, sizeof(pfield.gateway_ip));
+
+  pfield.internal_ip = inet_addr(my_ip);
+  pfield.gateway_ip = inet_addr(gateway_ip);
   strncpy(pfield.protocol, protocol, sizeof(pfield.protocol));
 
   printf("Request...\n");
@@ -283,7 +282,8 @@ int delport_upnp(int argc, char **argv) {
   pmap_field_t pfield;
   pfield.external_port = port;
   pfield.internal_port = port;
-  strncpy(pfield.gateway_ip, gateway_ip, sizeof(pfield.gateway_ip));
+  pfield.gateway_ip = inet_addr(gateway_ip);
+
   strncpy(pfield.protocol, protocol, sizeof(pfield.protocol));
 
   printf("Request...\n");

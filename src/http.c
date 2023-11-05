@@ -280,3 +280,86 @@ pbuffer_t *pmap_http_req(const char *hostname, int port, pbuffer_t *pbfr,
 
   return pbfr_recv;
 }
+
+/**
+ * Send an HTTP POST request to a remote host and receive the response.
+ *
+ * This function sends an HTTP POST request to a remote host specified by its
+ * hostname, port, and path. It allows the inclusion of custom headers and an
+ * optional request body contained in a pbuffer_t object. The HTTP response is
+ * received and stored in a new pbuffer_t object. The HTTP status code (if
+ * available) is returned through the http_status pointer.
+ *
+ * @param hostname The hostname or IP address of the remote host.
+ * @param port The port number to connect to on the remote host.
+ * @param path The URL path for the POST request.
+ * @param header Custom headers to be included in the request.
+ * @param pbfr_body A pbuffer_t object containing the request body, or NULL if
+ * there is no body.
+ * @param http_status A pointer to an integer where the HTTP status code will be
+ * stored.
+ * @return A pbuffer_t object containing the HTTP response, or NULL on error.
+ * The caller is responsible for managing and deallocating the memory by calling
+ * 'pbfr_destroy' function.
+ */
+pbuffer_t *pmap_http_post(const char *hostname, int port, char *path,
+                          char *header, pbuffer_t *pbfr_body,
+                          int *http_status) {
+
+  pbuffer_t *pbfr_recv = NULL;
+  pbuffer_t *pbfr = pmap_http_create("POST", hostname, port, path);
+  if (NULL != pbfr) {
+
+    if (NULL != header) {
+      pbfr_add(pbfr, header);
+      pbfr_add(pbfr, "Content-Type: text/xml; charset=\"utf-8\"\r\n");
+    }
+    if (NULL != pbfr_body) {
+      pbfr_add(pbfr, "Content-Length: %d\r\n", pbfr_body->offset);
+    }
+
+    pbfr_add(pbfr, "\r\n");
+
+    if (NULL != pbfr_body) {
+      pbfr_append(pbfr, pbfr_body);
+    }
+
+    pbfr_recv = pmap_http_req(hostname, port, pbfr, http_status);
+
+    pbfr_destroy(pbfr);
+  }
+
+  return pbfr_recv;
+}
+
+/**
+ * Send an HTTP GET request to a remote host and receive the response.
+ *
+ * This function sends an HTTP GET request to a remote host specified by its
+ * hostname, port, and path. It does not include a request body but allows for
+ * custom headers. The HTTP response is received and stored in a new pbuffer_t
+ * object. The HTTP status code (if available) is returned through the
+ * http_status pointer.
+ *
+ * @param hostname The hostname or IP address of the remote host.
+ * @param port The port number to connect to on the remote host.
+ * @param path The URL path for the GET request.
+ * @param http_status A pointer to an integer where the HTTP status code will be
+ * stored.
+ * @return A pbuffer_t object containing the HTTP response, or NULL on error.
+ * The caller is responsible for managing and deallocating the memory by calling
+ * 'pbfr_destroy' function.
+ */
+pbuffer_t *pmap_http_get(const char *hostname, int port, char *path,
+                         int *http_status) {
+
+  pbuffer_t *pbfr_recv = NULL;
+  pbuffer_t *pbfr = pmap_http_create("GET", hostname, port, path);
+  if (NULL != pbfr) {
+    pbfr_add(pbfr, "\r\n");
+    pbfr_recv = pmap_http_req(hostname, port, pbfr, http_status);
+    pbfr_destroy(pbfr);
+  }
+
+  return pbfr_recv;
+}

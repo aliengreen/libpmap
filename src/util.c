@@ -226,3 +226,33 @@ void pmap_ut_free_url(pmap_url_comp_t *url) {
     free(url);
   }
 }
+
+/**
+ * Convert a 32-bit IP address to a human-readable string representation.
+ *
+ * This function takes a 32-bit IP address in network byte order (big-endian)
+ * and converts it into a human-readable string representation in dotted-decimal
+ * format (e.g., "192.168.1.1").
+ *
+ * @param ip The 32-bit IP address to be converted to a string.
+ *
+ * @return A pointer to a character array containing the human-readable IP
+ * address string.
+ *         - The returned pointer points to a static character array, so it
+ * should not be modified or freed.
+ *
+ */
+char *pmap_ut_inet_ntoa(uint32_t ip) {
+
+  unsigned char bytes[4];
+  static char b[18];
+
+  bytes[0] = ip & 0xFF;
+  bytes[1] = (ip >> 8) & 0xFF;
+  bytes[2] = (ip >> 16) & 0xFF;
+  bytes[3] = (ip >> 24) & 0xFF;
+
+  snprintf(b, sizeof(b), "%u.%u.%u.%u", bytes[0], bytes[1], bytes[2], bytes[3]);
+
+  return b;
+}
