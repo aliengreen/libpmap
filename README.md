@@ -31,14 +31,14 @@ First type without arguments from command line:
 
 In terminal output window you will see options:
 
-    usage: ./pmap < -p | -u | -l > < -a | -d > <args>
+    usage: ./pmap < -p | -u | -l > < -a | -d | -e > <args>
       -p    Using NAT-PMP protocol for port mapping
             <args>: <external port> <my_ip_v4> <gateway_ip_v4> <protocol> <lifetime>
       -u    Using UPnP protocol for port mapping
             <args>: <external port> <my_ip_v4> <gateway_ip_v4> <protocol> <lifetime>
       -a    Add port mapping
       -d    Delete port mapping
-      -e    Get external IP from
+      -e    Get external IP address
       -l    Print list of available gateways (NAT-PMP and UPnP)
       -v    show request => response debug output
       -h    show this help and exit
