@@ -38,7 +38,7 @@ typedef struct pmap_url_comp_t_ {
   char *crtl_url;
 } pmap_url_comp_t;
 
-#define PMAP_COMPARE_URL_COMP(a, b)                                            \
+#define PMAP_COMPARE_URLCOMP(a, b)                                             \
   (strcmp(a->host, b->host) == 0 && strcmp(a->path, b->path) == 0 &&           \
    a->port == b->port)
 
@@ -47,7 +47,7 @@ char *pmap_ut_rtrim(char *s);
 char *pmap_ut_trim(char *s);
 int pmap_ut_substr(const char *startTxt, const char *endTxt,
                    const char *xmlSnippet, char *buffer, int len);
-int pmap_ut_parse_url(const char *url, pmap_url_comp_t *ucomp);
+pmap_url_comp_t *pmap_ut_parse_url(const char *url);
 void pmap_ut_free_url(pmap_url_comp_t *url);
 char *pmap_ut_inet_ntoa(uint32_t ip);
 #endif // _UTIL_H

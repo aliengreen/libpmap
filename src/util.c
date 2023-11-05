@@ -22,6 +22,7 @@
  */
 
 #include <ctype.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -153,18 +154,16 @@ int pmap_ut_substr(const char *startTxt, const char *endTxt,
  * url component by calling 'pmap_ut_url_free' function.
  *
  * @param url     The input URL to be parsed.
- * @param ucomp   A pointer to a pmap_url_comp_t structure where the URL
- * components will be stored.
- *
- * @return        0 if the URL is successfully parsed and its components are
- * stored in ucomp. An error code (EINVALIDURL) if there is an issue with the
- * URL format or parsing.
+ * @return        A pointer to a pmap_url_comp_t structure where the URL
+ * components will be stored or NULL an error code (EINVALIDURL) is stored in
+ * global errno variable.
  */
-int pmap_ut_parse_url(const char *url, pmap_url_comp_t *ucomp) {
+pmap_url_comp_t *pmap_ut_parse_url(const char *url) {
 
   /* Make a copy to avoid modifying the original string */
   char *copy = strdup(url);
   char *token, *rest;
+  pmap_url_comp_t *ucomp = calloc(1, sizeof(pmap_url_comp_t));
 
   /* Set default port */
   ucomp->port = 80;
@@ -176,7 +175,9 @@ int pmap_ut_parse_url(const char *url, pmap_url_comp_t *ucomp) {
   } else {
     ucomp->scheme = NULL;
     free(copy);
-    return EINVALIDURL;
+    free(ucomp);
+    errno = EINVALIDURL;
+    return NULL;
   }
 
   // Parse the host and port
@@ -199,7 +200,7 @@ int pmap_ut_parse_url(const char *url, pmap_url_comp_t *ucomp) {
   // Parse the path
   ucomp->path = rest;
 
-  return 0; /* OK */
+  return ucomp;
 }
 
 /**

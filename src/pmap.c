@@ -146,16 +146,8 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
       if (pmap_ut_substr("LOCATION:", "\r\n", pbfr->buffer, tmp, sizeof(tmp)) ==
           0) {
 
-        url_comp = calloc(1, sizeof(pmap_url_comp_t));
-        if (pmap_ut_parse_url(tmp, url_comp) != 0) {
-
-          /* Cleanup */
-          pmap_ut_free_url(url_comp);
-          pbfr_destroy(pbfr);
-
-          PMAP_DEBUG_ERROR("Can't parse URL [%s]", tmp);
-          return -1;
-        } else {
+        url_comp = pmap_ut_parse_url(tmp);
+        if (NULL != url_comp) {
 
           /**
            * Here we check IGD by calling HTTP get request to see device type.
@@ -185,7 +177,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
 
           int found = 0;
           for (pmap_url_comp_t *ucmp = *urls; ucmp != NULL; ucmp = ucmp->next) {
-            if (PMAP_COMPARE_URL_COMP(ucmp, url_comp)) {
+            if (PMAP_COMPARE_URLCOMP(ucmp, url_comp)) {
               found = 1;
             }
           }
@@ -202,6 +194,9 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
             /* Cleanup */
             pmap_ut_free_url(url_comp);
           }
+        } else {
+          PMAP_DEBUG_ERROR("Can't parse URL [%s]", tmp);
+          return -1;
         }
       }
 
