@@ -93,11 +93,18 @@ If you know exactly your IGD device IP address (in our case 192.168.1.1) you can
 
 void main(int argc, char *argv[]) {
   
-  int ret = 0;
-  printf("Request...\n");
-  if ((ret = pmap_upnp_addport(6568, 6568, "TCP", "192.168.1.7", "192.168.1.1",
-                               0)) == 0) {
+   int ret = 0;
+  char error_desc[64];
+  pmap_field_t pfield;
+  pfield.external_port = 6568;
+  pfield.internal_port = 6568;
+  pfield.lifetime_sec = 0;
+  pfield.internal_ip = inet_addr("192.168.1.7");
+  pfield.gateway_ip = inet_addr("192.168.1.1");
+  strncpy(pfield.protocol, "TCP", sizeof(pfield.protocol));
 
+  printf("Request...\n");
+  if ((ret = pmap_upnp_addport(&pfield, error_desc, sizeof(error_desc))) == 0) {
     printf("Add port mapping to [%s => %d] lifetime=%d secs%s\n", protocol,
            port, lifetime, (lifetime == 0) ? " (no expiration)" : "");
   } else {
@@ -122,9 +129,15 @@ To remove an external port mapping, you can use the `pmap_upnp_delport` function
 void main(int argc, char *argv[]) {
   
   int ret = 0;
-  printf("Request...\n");
-  if ((ret = pmap_upnp_delport(6568, "TCP", "192.168.1.7", "192.168.1.1")) == 0) {
+  char error_desc[64];
+  pmap_field_t pfield;
+  pfield.external_port = 6568;
+  pfield.internal_port = 6568;
+  pfield.gateway_ip = inet_addr("192.168.1.1");
+  strncpy(pfield.protocol, "TCP", sizeof(pfield.protocol));
 
+  printf("Request...\n");
+  if ((ret = pmap_upnp_delport(&pfield, error_desc, sizeof(error_desc))) == 0) {
     printf("Delete port mapping to [%s => %d]\n", protocol, port);
   } else {
     printf("Error deleting port mapping, error code=%d\n", ret);
@@ -147,10 +160,17 @@ The following code snippet demonstrates how to retrieve and display the external
 
 void main(int argc, char *argv[]) {
   
-  char external_ip[32];
+  int ret = 0;
+  char external_ip[16];
+  char error_desc[64];
+  pmap_field_t pfield;
+  pfield.gateway_ip = inet_addr("192.168.1.1");
   printf("Request...\n");
-  if (pmap_upnp_getexip("192.168.1.1", external_ip, sizeof(external_ip)) == 0) {
-     printf("[%s]\n", external_ip);
+  if ((ret = pmap_upnp_getexip(&pfield, external_ip, sizeof(external_ip),
+                               error_desc, sizeof(error_desc))) == 0) {
+    printf("External IP=[%s]\n", external_ip);
+  } else {
+    printf("Error getting external IP, error code=%d [%s]\n", ret, error_desc);
   }
   
 }
@@ -165,6 +185,4 @@ void main(int argc, char *argv[]) {
 If the function call is successful (returns 0), the external IP address is printed within square brackets to the console. 
 
 If you retrieve an IP address from an Internet Gateway Device (IGD) and that address is in the range of private IP address spaces, such as "192.168.*.*" or "10.0.*.*," it typically indicates the presence of another NAT (Network Address Translation) device or firewall in front of the IGD. This situation is commonly referred to as "Double NAT." This impacts of External Port Mapping more precise is involves **Limited Inbound Access** - In a Double NAT scenario, devices behind the second NAT (the IGD) may have limited or no direct inbound access from the public internet. This is because the first NAT device often doesn't have knowledge of the port mappings on the IGD. Double NAT situations is crucial, especially when you require specific network configurations, remote access to devices,  as it can affect the ability of devices in your local network to communicate with the internet and external devices. Also check [External Port Mapping Considerations](docs/EPMC.md)
-
-
 

@@ -36,9 +36,17 @@
     PMAP_PRINTF("%s: " format, __func__, ##args);                              \
   } while (0)
 
+/* Log debug information */
+#define PMAP_DEBUG_HEX_LOG(d, s, format, args...)                              \
+  do {                                                                         \
+    PMAP_PRINTF("%s: " format, __func__, ##args);                              \
+    pmap_ut_dump_hex(d, s);                                                    \
+  } while (0)
+
 #else
 /* Then do nothing (easy case) */
 #define PMAP_DEBUG_LOG(format, args...)
+#define PMAP_DEBUG_HEX_LOG(d, sformat, args...)
 
 #endif
 

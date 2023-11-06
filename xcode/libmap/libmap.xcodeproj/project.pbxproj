@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		136B9DF72AEEBDAD00E06167 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 136B9DF62AEEBDAD00E06167 /* main.c */; };
 		136B9E072AEEBDD600E06167 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 136B9E002AEEBDD500E06167 /* util.c */; };
-		136B9E082AEEBDD600E06167 /* pmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 136B9E022AEEBDD500E06167 /* pmap.c */; };
+		13A273762AF8F02B006E0916 /* pmap_upnp.c in Sources */ = {isa = PBXBuildFile; fileRef = 13A273712AF8F02B006E0916 /* pmap_upnp.c */; };
+		13A273772AF8F02B006E0916 /* pmap_npmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 13A273732AF8F02B006E0916 /* pmap_npmp.c */; };
 		13BF0D472AF14881004A687C /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 13BF0D432AF14881004A687C /* buffer.c */; };
 		13BF0D482AF14881004A687C /* http.c in Sources */ = {isa = PBXBuildFile; fileRef = 13BF0D452AF14881004A687C /* http.c */; };
 /* End PBXBuildFile section */
@@ -32,10 +33,13 @@
 		136B9DFE2AEEBDD500E06167 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../../src/util.h; sourceTree = "<group>"; };
 		136B9DFF2AEEBDD500E06167 /* upnp_msg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = upnp_msg.h; path = ../../../src/upnp_msg.h; sourceTree = "<group>"; };
 		136B9E002AEEBDD500E06167 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../../src/util.c; sourceTree = "<group>"; };
-		136B9E012AEEBDD500E06167 /* pmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmap.h; path = ../../../src/pmap.h; sourceTree = "<group>"; };
-		136B9E022AEEBDD500E06167 /* pmap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmap.c; path = ../../../src/pmap.c; sourceTree = "<group>"; };
 		1398225B2AF02FC10068F31B /* pmap_errno.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmap_errno.h; path = ../../../src/pmap_errno.h; sourceTree = "<group>"; };
 		1398225C2AF02FC10068F31B /* pmap_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmap_debug.h; path = ../../../src/pmap_debug.h; sourceTree = "<group>"; };
+		13A273712AF8F02B006E0916 /* pmap_upnp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmap_upnp.c; path = ../../../src/pmap_upnp.c; sourceTree = "<group>"; };
+		13A273722AF8F02B006E0916 /* pmap_npmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmap_npmp.h; path = ../../../src/pmap_npmp.h; sourceTree = "<group>"; };
+		13A273732AF8F02B006E0916 /* pmap_npmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmap_npmp.c; path = ../../../src/pmap_npmp.c; sourceTree = "<group>"; };
+		13A273742AF8F02B006E0916 /* pmap_upnp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmap_upnp.h; path = ../../../src/pmap_upnp.h; sourceTree = "<group>"; };
+		13A273752AF8F02B006E0916 /* pmap_cfg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmap_cfg.h; path = ../../../src/pmap_cfg.h; sourceTree = "<group>"; };
 		13BF0D432AF14881004A687C /* buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buffer.c; path = ../../../src/buffer.c; sourceTree = "<group>"; };
 		13BF0D442AF14881004A687C /* buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = buffer.h; path = ../../../src/buffer.h; sourceTree = "<group>"; };
 		13BF0D452AF14881004A687C /* http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = http.c; path = ../../../src/http.c; sourceTree = "<group>"; };
@@ -72,6 +76,11 @@
 		136B9DF52AEEBDAD00E06167 /* libmap */ = {
 			isa = PBXGroup;
 			children = (
+				13A273752AF8F02B006E0916 /* pmap_cfg.h */,
+				13A273732AF8F02B006E0916 /* pmap_npmp.c */,
+				13A273722AF8F02B006E0916 /* pmap_npmp.h */,
+				13A273712AF8F02B006E0916 /* pmap_upnp.c */,
+				13A273742AF8F02B006E0916 /* pmap_upnp.h */,
 				13BF0D432AF14881004A687C /* buffer.c */,
 				13BF0D442AF14881004A687C /* buffer.h */,
 				13BF0D452AF14881004A687C /* http.c */,
@@ -79,8 +88,6 @@
 				1398225C2AF02FC10068F31B /* pmap_debug.h */,
 				1398225B2AF02FC10068F31B /* pmap_errno.h */,
 				136B9DF62AEEBDAD00E06167 /* main.c */,
-				136B9E022AEEBDD500E06167 /* pmap.c */,
-				136B9E012AEEBDD500E06167 /* pmap.h */,
 				136B9DFF2AEEBDD500E06167 /* upnp_msg.h */,
 				136B9E002AEEBDD500E06167 /* util.c */,
 				136B9DFE2AEEBDD500E06167 /* util.h */,
@@ -147,8 +154,9 @@
 			files = (
 				13BF0D482AF14881004A687C /* http.c in Sources */,
 				136B9DF72AEEBDAD00E06167 /* main.c in Sources */,
-				136B9E082AEEBDD600E06167 /* pmap.c in Sources */,
 				136B9E072AEEBDD600E06167 /* util.c in Sources */,
+				13A273762AF8F02B006E0916 /* pmap_upnp.c in Sources */,
+				13A273772AF8F02B006E0916 /* pmap_npmp.c in Sources */,
 				13BF0D472AF14881004A687C /* buffer.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

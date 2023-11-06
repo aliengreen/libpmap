@@ -21,8 +21,6 @@
  *    ASCII font see http://patorjk.com/software/taag/#p=display&f=3D-ASCII
  */
 
-#include "src/buffer.h"
-#include "src/pmap.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,7 +42,8 @@
 #include "xgetopt.h"
 #endif
 
-#include "pmap.h"
+#include "pmap_npmp.h"
+#include "pmap_upnp.h"
 
 #define OP_PROTOCOL_NAT_PMP 1
 #define OP_PROTOCOL_UPNP 2
@@ -58,9 +57,13 @@ int debug_level = 0; // NO_DEBUG;
 int pmap_upnp(int argc, char **argv);
 void usage(char *progname);
 void print_list();
-int print_exip(int argc, char **argv);
+int print_upnp_exip(int argc, char **argv);
 int addport_upnp(int argc, char **argv);
 int delport_upnp(int argc, char **argv);
+
+int print_npmp_exip(int argc, char **argv);
+int addport_npmp(int argc, char **argv);
+int delport_npmp(int argc, char **argv);
 
 int main(int argc, char *argv[]) {
   int ret;
@@ -114,12 +117,28 @@ int main(int argc, char *argv[]) {
   ret = 0;
 
   /* Set debug  */
-  pmap_http_set_debug(debug_level);
+  pmap_set_debug(debug_level);
 
   if (operation == OP_LIST) {
     print_list();
   } else if (operation == OP_PROTOCOL_NAT_PMP) {
-    printf("NAT_PMP not supported yet !\n");
+
+    if (action == 0) {
+      printf("-a, -d  or -e options should be specified\n");
+    } else if (action == 1) {
+      if (addport_npmp(argc, argv) != 0) {
+        usage(argv[0]);
+      }
+    } else if (action == 2) {
+      if (delport_npmp(argc, argv) != 0) {
+        usage(argv[0]);
+      }
+    } else if (action == 3) {
+      if (print_npmp_exip(argc, argv) != 0) {
+        usage(argv[0]);
+      }
+    }
+
   } else if (operation == OP_PROTOCOL_UPNP) {
 
     if (action == 0) {
@@ -133,10 +152,11 @@ int main(int argc, char *argv[]) {
         usage(argv[0]);
       }
     } else if (action == 3) {
-      if (print_exip(argc, argv) != 0) {
+      if (print_upnp_exip(argc, argv) != 0) {
         usage(argv[0]);
       }
     }
+
   } else {
     usage(argv[0]);
   }
@@ -164,7 +184,7 @@ void usage(char *progname) {
          "  -a    Add port mapping\n"
          "  -d    Delete port mapping\n"
          "  -e    Get external IP address\n"
-         "  -l    Print list of available gateways (NAT-PMP and UPnP)\n"
+         "  -l    Print list of available IGDs (UPnP)\n"
          "  -v    show request => response debug output\n"
          "  -h    show this help and exit\n"
          "Example 1: %s -l\n"
@@ -196,7 +216,7 @@ void print_list() {
 
 /* -------------------------------------------- */
 
-int print_exip(int argc, char **argv) {
+int print_upnp_exip(int argc, char **argv) {
 
   int count = argc - optind;
   if (count < 1) {
@@ -216,7 +236,8 @@ int print_exip(int argc, char **argv) {
                                error_desc, sizeof(error_desc))) == 0) {
     printf("External IP=[%s]\n", external_ip);
   } else {
-    printf("Error getting external IP, error code=%d [%s]\n", ret, error_desc);
+    printf("Error getting external IP, error code=%d [%s]\n", errno,
+           error_desc);
   }
 
   return 0;
@@ -258,7 +279,8 @@ int addport_upnp(int argc, char **argv) {
     printf("Add port mapping to [%s => %d] lifetime=%d secs%s\n", protocol,
            port, lifetime, (lifetime == 0) ? " (no expiration)" : "");
   } else {
-    printf("Error adding port mapping, error code=%d [%s]\n", ret, error_desc);
+    printf("Error adding port mapping, error code=%d [%s]\n", errno,
+           error_desc);
   }
 
   return 0;
@@ -291,7 +313,7 @@ int delport_upnp(int argc, char **argv) {
 
     printf("Delete port mapping to [%s => %d]\n", protocol, port);
   } else {
-    printf("Error deleting port mapping, error code=%d [%s]\n", ret,
+    printf("Error deleting port mapping, error code=%d [%s]\n", errno,
            error_desc);
   }
 
@@ -299,3 +321,108 @@ int delport_upnp(int argc, char **argv) {
 }
 
 /* -------------------------------------------- */
+
+int print_npmp_exip(int argc, char **argv) {
+
+  int count = argc - optind;
+  if (count < 1) {
+    fprintf(stderr, err_arg_missing);
+    return 1;
+  }
+
+  char *gateway_ip = argv[optind];
+
+  int ret = 0;
+  char external_ip[16];
+  char error_desc[64];
+  pmap_field_t pfield;
+  pfield.gateway_ip = inet_addr(gateway_ip);
+  printf("Request...\n");
+  if ((ret = pmap_npmp_getexip(&pfield, external_ip, sizeof(external_ip),
+                               error_desc, sizeof(error_desc))) == 0) {
+    printf("External IP=[%s]\n", external_ip);
+  } else {
+    printf("Error getting external IP, error code=%d [%s]\n", errno,
+           error_desc);
+  }
+
+  return 0;
+}
+
+/* -------------------------------------------- */
+
+int addport_npmp(int argc, char **argv) {
+
+  int count = argc - optind;
+  if (count < 4) {
+    fprintf(stderr, err_arg_missing);
+    return 1;
+  }
+
+  int port = atoi(argv[optind]);
+  char *my_ip = argv[optind + 1];
+  char *gateway_ip = argv[optind + 2];
+  char *protocol = argv[optind + 3];
+  int lifetime = 0;
+  if (count == 5) {
+    lifetime = atoi(argv[optind + 4]);
+  }
+
+  int ret = 0;
+  char error_desc[64];
+  pmap_field_t pfield;
+  pfield.external_port = port;
+  pfield.internal_port = port;
+  pfield.lifetime_sec = lifetime;
+
+  pfield.internal_ip = inet_addr(my_ip);
+  pfield.gateway_ip = inet_addr(gateway_ip);
+  strncpy(pfield.protocol, protocol, sizeof(pfield.protocol));
+
+  printf("Request...\n");
+  if ((ret = pmap_npmp_addport(&pfield, error_desc, sizeof(error_desc))) == 0) {
+
+    printf("Add port mapping to [%s => %d] lifetime=%d secs%s\n", protocol,
+           pfield.external_port, pfield.lifetime_sec,
+           (lifetime == 0) ? " (no expiration)" : "");
+  } else {
+    printf("Error adding port mapping, error code=%d [%s]\n", errno,
+           error_desc);
+  }
+
+  return 0;
+}
+
+/* -------------------------------------------- */
+
+int delport_npmp(int argc, char **argv) {
+
+  int count = argc - optind;
+  if (count < 2) {
+    fprintf(stderr, err_arg_missing);
+    return 1;
+  }
+  int port = atoi(argv[optind]);
+  char *gateway_ip = argv[optind + 1];
+  char *protocol = argv[optind + 2];
+
+  int ret = 0;
+  char error_desc[64];
+  pmap_field_t pfield;
+  pfield.external_port = port;
+  pfield.internal_port = port;
+  pfield.gateway_ip = inet_addr(gateway_ip);
+
+  strncpy(pfield.protocol, protocol, sizeof(pfield.protocol));
+
+  printf("Request...\n");
+  if ((ret = pmap_npmp_delport(&pfield, error_desc, sizeof(error_desc))) == 0) {
+
+    printf("Delete port mapping to [%s => %d]\n", protocol, port);
+  } else {
+    printf("Error deleting port mapping, error code=%d [%s]\n", errno,
+           error_desc);
+  }
+
+  return 0;
+}

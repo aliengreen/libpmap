@@ -46,7 +46,8 @@ OBJECTS		:= \
 	src/util.o \
 	src/buffer.o \
 	src/http.o \
-	src/pmap.o \
+	src/pmap_upnp.o \
+	src/pmap_npmp.o \
 
 INCLUDES	:= $(addprefix -I,$(MODULES))
 

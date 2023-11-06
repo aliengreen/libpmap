@@ -1,5 +1,5 @@
 /*
- *    pmap.c
+ *    pmap_upnp.c
  *
  *    Copyright (c) 2023 Alien Green LLC
  *
@@ -37,8 +37,8 @@
 
 #include "buffer.h"
 #include "http.h"
-#include "pmap.h"
 #include "pmap_debug.h"
+#include "pmap_upnp.h"
 #include "upnp_msg.h"
 #include "util.h"
 
@@ -56,7 +56,7 @@ uint8_t pmap_debug = false;
  * @param debug A boolean value indicating whether to enable or disable
  * debugging. Use 'false' to disable debugging and 'true' to enable it.
  */
-void pmap_http_set_debug(uint8_t debug) {
+void pmap_set_debug(uint8_t debug) {
 
   /* This global variable - false mean disable debug, true enable */
   pmap_debug = debug;
@@ -78,7 +78,7 @@ void pmap_http_set_debug(uint8_t debug) {
  * filtered UPnP devices.
  * @param only_igds Set to 1 to filter and retrieve only Internet Gateway
  * Devices (IGDs).
- * @return 0 on success, -1 on failure.
+ * @return 0 on success, 1 on failure.
  */
 int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
 
@@ -96,7 +96,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
    */
   if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
     PMAP_DEBUG_ERROR("socket() %s", strerror(errno));
-    return -1;
+    return 1;
   }
 
   struct timeval tv;
@@ -104,7 +104,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
   tv.tv_usec = 0;
   if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
     PMAP_DEBUG_ERROR("setsockopt() %s", strerror(errno));
-    return -1;
+    return 1;
   }
 
   /**
@@ -125,7 +125,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
   if (sendto(sockfd, m_search, (strlen(m_search)), 0, (struct sockaddr *)&igds,
              sizeof(igds)) < 0) {
     PMAP_DEBUG_ERROR("sendto() %s", strerror(errno));
-    return -1;
+    return 1;
   }
   pbuffer_t *pbfr = pbfr_create(1024);
 
@@ -196,7 +196,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
           }
         } else {
           PMAP_DEBUG_ERROR("Can't parse URL [%s]", tmp);
-          return -1;
+          return 1;
         }
       }
 
@@ -220,7 +220,7 @@ int pmap_list_upnp(pmap_url_comp_t **urls, uint8_t only_igds) {
  *
  * @param urls A pointer to a pointer for storing the list of discovered and
  * filtered IGDs.
- * @return 0 on success, -1 on failure.
+ * @return 0 on success, 1 on failure.
  */
 int pmap_list_igd(pmap_url_comp_t **urls) {
   return pmap_list_upnp(urls, PMAP_UPNP_LIST_IGD);
@@ -490,7 +490,7 @@ int pmap_upnp_getexip(pmap_field_t *pfield, char *external_ip, int esize,
 pbuffer_t *pmap_upnp_action(int action, pmap_field_t *pfield,
                             int *http_status) {
 
-  pmap_url_comp_t *urls;
+  pmap_url_comp_t *urls = NULL;
   pbuffer_t *pbfr_rcv = NULL;
 
   pbuffer_t *pbfr_tmp = pbfr_create(128);
@@ -499,7 +499,9 @@ pbuffer_t *pmap_upnp_action(int action, pmap_field_t *pfield,
   }
 
   /* Get list of all UPnP devices (M-SEARCH) */
-  pmap_list_upnp(&urls, 0);
+  if (pmap_list_upnp(&urls, PMAP_UPNP_LIST_ALL) != 0) {
+    goto cleanup;
+  }
 
   for (pmap_url_comp_t *ucmp = urls; ucmp != NULL; ucmp = ucmp->next) {
 
@@ -548,6 +550,8 @@ pbuffer_t *pmap_upnp_action(int action, pmap_field_t *pfield,
       break;
     }
   }
+
+cleanup:
 
   /* Destroy components allocated by 'pmap_get_ids' function */
   pmap_list_free(urls);
