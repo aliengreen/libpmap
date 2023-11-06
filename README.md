@@ -53,9 +53,9 @@ In terminal output window you will see options:
 
 ## How to use pmap
 
-##### Print list of available gateways (NAT-PMP and UPnP-IGDP)
+##### Print list of available gateways (UPnP-IGDP)
 
-The provided command, is used to list available gateways in the local network that support NAT-PMP and UPnP-IGDP protocols for managing port mappings.
+The provided command, is used to list available gateways in the local network that support UPnP-IGDP protocols for managing port mappings.
 
 ```
 ./pmap -l
