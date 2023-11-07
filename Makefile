@@ -23,8 +23,8 @@ else
         endif
     endif
     ifeq ($(UNAME_S),Darwin)
-        TARGET_OS := OSX
-        DIST_SUFFIX := osx
+        TARGET_OS := macOS
+        DIST_SUFFIX := macos
     endif
     ifeq ($(UNAME_S),FreeBSD)
         TARGET_OS := FREEBSD
