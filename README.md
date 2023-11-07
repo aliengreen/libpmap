@@ -54,7 +54,7 @@ In terminal output window you will see options:
 
 ## How to use `pmap` CLI
 
-##### Print list of available gateways (UPnP-IGDP)
+#### Print list of available gateways (UPnP-IGDP)
 
 The provided command is used to list available gateways in the local network that support UPnP-IGDP protocols for managing port mappings. This command is specific to UPnP-IGDP because NAT-PMP is only available on the default gateway IP address to which you are currently connected.
 
@@ -73,7 +73,7 @@ Host			Path		Control URL
 -----------------------------------------------------------
 ```
 
-##### Add port mapping
+#### Add port mapping
 
 The provided command is used to create a UPnP-IGDP port mapping, which forwards external traffic from port `6569` to an internal device at IP address `192.168.1.7` on port `6569`, using the `TCP` protocol, with a lifetime of `7200` seconds. You can choose to use NAT-PMP instead by changing the first argument of the command line: `-u` indicates UPnP-IGDP, and `-p` indicates NAT-PMP. Therefore, you can replace `-u` with `-p` to use NAT-PMP.
 
@@ -102,7 +102,7 @@ After executing the command. Here's a breakdown of the output:
 
 "Add port mapping to [TCP => 6569] lifetime=7200 secs": This part of the output signifies the successful addition of the port mapping.
 
-##### Delete port mapping
+#### Delete port mapping
 
 The provided command is used to delete a UPnP-IGDP port mapping associated with the specified external port number `6569` and protocol `TCP` on the router or gateway with the IP address `192.168.1.1`. The output confirms the successful removal of the port mapping. To achieve this using NAT-PMP, you can change the first argument of the command line. Use `-u` for UPnP-IGDP and `-p` for NAT-PMP
 
@@ -127,7 +127,7 @@ Delete port mapping to [TCP => 6569]
 
 "Delete port mapping to [TCP => 6569]": This part of the output signifies the successful deletion of the port mapping.
 
-##### Get external IP
+#### Get external IP
 
 The provided command is used to query a router or gateway with the IP address `192.168.1.1` and retrieve its external IP address using UPnP. This information can be helpful in various networking scenarios where knowing the external IP address is necessary, such as for remote access or dynamic DNS services. To achieve the same with NAT-PMP, simply change the first argument of the command line. Use `-u` for UPnP or `-p` for NAT-PMP:
 
