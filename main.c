@@ -50,13 +50,12 @@
 #define OP_LIST 3
 
 static const char err_arg_missing[] = "Argument(s) missing !\n";
-
-int opt_debug = 0;
 int debug_level = 0; // NO_DEBUG;
 
+/* internal functions */
 int pmap_upnp(int argc, char **argv);
 void usage(char *progname);
-void print_list();
+void print_list_igds();
 int print_upnp_exip(int argc, char **argv);
 int addport_upnp(int argc, char **argv);
 int delport_upnp(int argc, char **argv);
@@ -64,6 +63,8 @@ int delport_upnp(int argc, char **argv);
 int print_npmp_exip(int argc, char **argv);
 int addport_npmp(int argc, char **argv);
 int delport_npmp(int argc, char **argv);
+
+/* -------------------------------------------- */
 
 int main(int argc, char *argv[]) {
   int ret;
@@ -120,7 +121,7 @@ int main(int argc, char *argv[]) {
   pmap_set_debug(debug_level);
 
   if (operation == OP_LIST) {
-    print_list();
+    print_list_igds();
   } else if (operation == OP_PROTOCOL_NAT_PMP) {
 
     if (action == 0) {
@@ -173,18 +174,21 @@ error:
   exit(1);
 }
 
+/* -------------------------------------------- */
+
 void usage(char *progname) {
-  printf("usage: %s < -p | -u | -l > < -a | -d | -e > <args>\n", progname);
-  printf("  -p    Using NAT-PMP protocol for port mapping\n"
-         "        <args>: <external port> <my_ip_v4> <gateway_ip_v4> "
-         "<protocol> <lifetime>\n"
-         "  -u    Using UPnP protocol for port mapping\n"
-         "        <args>: <external port> <my_ip_v4> <gateway_ip_v4> "
-         "<protocol> <lifetime>\n"
+  printf("usage: %s < -a | -d | -e > < -u | -p > <args>\n", progname);
+  printf(""
          "  -a    Add port mapping\n"
+         "        <args>: <external port> <my_IPv4> <gateway_IPv4> <protocol> "
+         "<lifetime>\n"
          "  -d    Delete port mapping\n"
+         "        <args>: <external port> <gateway_IPv4> <protocol>\n"
          "  -e    Get external IP address\n"
+         "        <args>: <gateway_IPv4>\n"
          "  -l    Print list of available IGDs (UPnP)\n"
+         "  -p    Using NAT-PMP protocol for port mapping\n"
+         "  -u    Using UPnP protocol for port mapping\n"
          "  -v    show request => response debug output\n"
          "  -h    show this help and exit\n"
          "Example 1: %s -l\n"
@@ -196,12 +200,12 @@ void usage(char *progname) {
 
 /* -------------------------------------------- */
 
-void print_list() {
+void print_list_igds() {
 
   pmap_url_comp_t *urls;
 
   printf("Request...\n");
-  pmap_list_upnp(&urls, PMAP_UPNP_LIST_ALL);
+  pmap_list_upnp(&urls, PMAP_UPNP_LIST_IGD);
   printf("-----------------------------------------------------------\n");
   printf("Host\t\t\tPath\t\tControl URL\n");
   printf("-----------------------------------------------------------\n");
