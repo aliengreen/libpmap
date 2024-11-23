@@ -10,7 +10,6 @@ UPnP-IGDP and NAT-PMP port forwarding services are usually activated by default 
 
 This protocols should only be used when the client determines that its primary IPv4 address is in one of the private IPv4 address ranges defined in "Address Allocation for Private Internets" [RFC1918].   This includes the address ranges `10/8`, `172.16/12`, and `192.168/16`.
 
-***NOTE: The project is under active development and anything can change at any time.***
 
 
 
